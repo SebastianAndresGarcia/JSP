@@ -21,99 +21,17 @@
 	src="https://cdn.tiny.cloud/1/470vl6oydu4y113xe2muphz55fln53vldzpewunxn0v858qz/tinymce/5/tinymce.min.js"
 	referrerpolicy="origin"></script>
 <script>
-	tinymce
-			.init({
-				selector : 'textarea#editorHtml',
-				plugins : 'print preview fullpage paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
-				imagetools_cors_hosts : [ 'picsum.photos' ],
-				menubar : 'file edit view insert format tools table help',
-				toolbar : 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
-				toolbar_sticky : true,
-				autosave_ask_before_unload : true,
-				autosave_interval : "30s",
-				autosave_prefix : "{path}{query}-{id}-",
-				autosave_restore_when_empty : false,
-				autosave_retention : "2m",
-				image_advtab : true,
-				content_css : [
-						'//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
-						'//www.tiny.cloud/css/codepen.min.css' ],
-				link_list : [ {
-					title : 'My page 1',
-					value : 'http://www.tinymce.com'
-				}, {
-					title : 'My page 2',
-					value : 'http://www.moxiecode.com'
-				} ],
-				image_list : [ {
-					title : 'My page 1',
-					value : 'http://www.tinymce.com'
-				}, {
-					title : 'My page 2',
-					value : 'http://www.moxiecode.com'
-				} ],
-				image_class_list : [ {
-					title : 'None',
-					value : ''
-				}, {
-					title : 'Some class',
-					value : 'class-name'
-				} ],
-				importcss_append : true,
-				height : 400,
-				file_picker_callback : function(callback, value, meta) {
-					/* Provide file and text for the link dialog */
-					if (meta.filetype === 'file') {
-						callback('https://www.google.com/logos/google.jpg', {
-							text : 'My text'
-						});
-					}
-
-					/* Provide image and alt text for the image dialog */
-					if (meta.filetype === 'image') {
-						callback('https://www.google.com/logos/google.jpg', {
-							alt : 'My alt text'
-						});
-					}
-
-					/* Provide alternative source and posted for the media dialog */
-					if (meta.filetype === 'media') {
-						callback('movie.mp4', {
-							source2 : 'alt.ogg',
-							poster : 'https://www.google.com/logos/google.jpg'
-						});
-					}
-				},
-				templates : [
-						{
-							title : 'New Table',
-							description : 'creates a new table',
-							content : '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>'
-						},
-						{
-							title : 'Starting my story',
-							description : 'A cure for writers block',
-							content : 'Once upon a time...'
-						},
-						{
-							title : 'New list with dates',
-							description : 'New List with dates',
-							content : '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>'
-						} ],
-				template_cdate_format : '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
-				template_mdate_format : '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
-				height : 600,
-				image_caption : true,
-				quickbars_selection_toolbar : 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
-				noneditable_noneditable_class : "mceNonEditable",
-				toolbar_drawer : 'sliding',
-				contextmenu : "link image imagetools table",
-			});
+	tinymce.init({
+		selector : 'textarea'
+	});
 </script>
 <script>
-	var idempresa = document.getElementById("empresaId");
-	document.getElementById("noticiaId").value = idempresa;
+	function verHTML() {
+		var content = tinymce.get("editorHtml").getContent();
+		alert(content);
+	}
 </script>
+
 </head>
 
 
@@ -205,24 +123,32 @@
 								<select name="empresaId" id="empresaId"
 									onchange="this.form.submit()" required>
 									<%
-									String mostrar="Elija una empresa";
+									String mostrar = "Elija una empresa";
+
 									if ((Integer) request.getAttribute("idEmp") != null) {
-										mostrar=listaempresas.get((Integer) request.getAttribute("idEmp")).getDenominacion();
-										System.out.println("mostrar: "+mostrar+". atributo idEmp "+request.getAttribute("idEmp"));
+										int i = (Integer) request.getAttribute("idEmp");
+										EmpresaController econt = new EmpresaController();
+										mostrar = econt.nombreEmpresa(i);
+										System.out.println("mostrar: " + mostrar + ". atributo idEmp " + i);
+										
 									}
+									
 									%>
-									<option value="<%=(Integer) request.getAttribute("idEmp")%>"><%=mostrar%></option>					
-								
+
+									<option value="<%=(Integer) request.getAttribute("idEmp")%>"><%=mostrar%></option>
+
 									<%
 									for (Empresa e : listaempresas) {
 									%>
 
 									<option value="<%=e.getId()%>"><%=e.getDenominacion()%></option>
+
 									<%
 									}
 									%>
 
 								</select>
+
 							</div>
 							<div class="form-group">
 								<%
@@ -238,77 +164,105 @@
 									System.out.println("tamaño listanoti " + listanoticias.size());
 								}
 								%>
-								<select name="noticiaId">
+								
+								<select id="noticiaId" name="noticiaId"
+									onchange="this.form.submit()">
 									<option value="">Elija una Noticia</option>
 									<%
 									for (noticia n : listanoticias) {
 									%>
-
+									<!-- <input type="hidden" hidden="hidden" id="gettitulonoticia" name="gettitulonoticia" value=<%=n.getTitulonoticia()%>> -->
 									<option value="<%=n.getId()%>"><%=n.getTitulonoticia()%></option>
-
 									<%
 									}
 									%>
 								</select>
 
+
+
 							</div>
 						</form>
 
 						<form name="noticia" action="noticia" method="post">
+
+							<input type="hidden" id="empresaIdRequest"
+								name="empresaIdRequest"
+								value="<%=(Integer) request.getAttribute("idEmp")%>">
+							<script type="text/javascript">
+								var selectValue = document
+										.getElementById("empresaIdRequest").value;
+								document.getElementById("empresaId").value = selectValue;
+							</script>
+							<input type="hidden" id="noticiaIdRequest"
+								name="noticiaIdRequest"
+								value="<%=(Integer) request.getAttribute("idNoti")%>">
+							<script type="text/javascript">
+								var selectValue = document
+										.getElementById("noticiaIdRequest").value;
+								document.getElementById("noticiaId").value = selectValue;
+							</script>
+							<%
+							System.out.println("valor de idEmp del request dps de ir y volver " + (Integer) request.getAttribute("idEmp"));
+							%>
+
+							<%
+							noticia noticia = new noticia();
+							noticiaController not = new noticiaController();
+							if ((Integer) request.getAttribute("idNoti") != null) {
+								noticia = not.noticiaporID((Integer) request.getAttribute("idNoti"), (Integer) request.getAttribute("idEmp"));
+							}
+							%>
 							<div class="form-group">
 								<label for="uname">Título de la Noticia:</label> <input
 									type="text" class="form-control" id="titulonoticia"
-									placeholder="titulonoticia" name="titulonoticia" required>
+									placeholder="titulonoticia" name="titulonoticia"
+									value="<%=noticia.getTitulonoticia()%>" required>
 							</div>
 
 							<div class="form-group">
 								<label for="uname">Resumen de la noticia:</label> <input
 									type="text" class="form-control" id="resumennoticia"
-									placeholder="resumennoticia" name="resumennoticia" required>
+									placeholder="resumennoticia" name="resumennoticia"
+									value="<%=noticia.getResumennoticia()%>" required>
 							</div>
 
 							<div class="form-group">
 								<label for="uname">Imagen de la noticia:</label> <input
 									type="text" class="form-control" id="imagennoticia"
-									placeholder="imagennoticia" name="imagennoticia" required>
+									placeholder="imagennoticia" name="imagennoticia"
+									value="<%=noticia.getImagennoticia()%>" required>
 							</div>
 
 							<div class="form-group">
+								<label for="uname">ContenidoHTML:</label>
 								<textarea id="editorHtml" name="editorHtml" rows="10" cols="60"></textarea>
 								<p></p>
-								<!-- 	<button onclick="mySave()">Save</button>
-								<button onclick="myLoad()">Load</button>   -->
-								<button onclick="verHTML()">VER HTML</button>
-								<script>
-									/*function mySave() {
-										var myContent = document
-												.getElementById("editorHtml").value;
-										localStorage.setItem("myContent",
-												myContent);
-									}
-									function myLoad() {
-										var myContent = localStorage
-												.getItem("myContent");
-										document.getElementById("editorHtml").value = myContent;
-									} */
-									function verHTML() {
-										var content = tinymce.get("editorHtml")
-												.getContent();
-										alert(content);
-									}
-								</script>
-							</div>
 
+								<button onclick="verHTML()">VER HTML</button>
+
+							</div>
+							<input type="hidden" id="contenidohtml" name="contenidohtml"
+								value="<%=noticia.getContenidohtml()%>">
+							<%
+							System.out.println("contenidohtlm: " + noticia.getContenidohtml());
+							%>
+							<script type="text/javascript">
+								var contenidohtml = document
+										.getElementById("contenidohtml").value;
+								document.getElementById("editorHtml").value = contenidohtml;
+							</script>
 							<div class="form-group">
 								<label for="uname">Publicada(S/N):</label> <input type="text"
 									class="form-control" id="publicada" placeholder="publicada"
-									name="publicada" required>
+									name="publicada" value="<%=noticia.getPublicada()%>" required>
 							</div>
 							<div class="form-group">
 								<label for="uname">Fecha de Publicación:</label> <input
 									type="text" class="form-control" id="fechapublicacion"
-									placeholder="fechapublicacion" name="fechapublicacion" required>
+									placeholder="fechapublicacion" name="fechapublicacion"
+									value="<%=noticia.getFechapublicacion()%>" required>
 							</div>
+
 							<button type="submit" name="accion" value="A"
 								class="btn btn-primary" onclick="mySave()">Grabar
 								Noticia</button>

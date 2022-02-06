@@ -14,20 +14,29 @@ import net.javaguides.hibernate.util.HibernateUtil;
 public class noticiaDao {
 	public void saveNoticia(noticia noti) {
 		Transaction transaction = null;
-		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		try {
 			// start a transaction
 			transaction = session.beginTransaction();
 			// save the student object
-			session.save(noti);
+			noticia noticia=session.get(noticia.class, noti.getId());
+			noticia.setContenidohtml(noti.getContenidohtml());
+			noticia.setFechapublicacion(noti.getFechapublicacion());
+			noticia.setImagennoticia(noti.getImagennoticia());
+			noticia.setPublicada(noti.getPublicada());
+			noticia.setResumennoticia(noti.getResumennoticia());
+			noticia.setTitulonoticia(noti.getTitulonoticia());
+			session.update(noticia);
 			// commit transaction
-			transaction.commit();
-			session.close();
+			
 		} catch (Exception e) {
 			if (transaction != null) {
 				transaction.rollback();
 			}
 			e.printStackTrace();
 		}
+		transaction.commit();
+		session.close();
 	}
 
 	public void DeleteNoticia(Object o) throws Exception {

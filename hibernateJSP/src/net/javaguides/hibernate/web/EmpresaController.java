@@ -74,4 +74,16 @@ public class EmpresaController extends HttpServlet {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("register.jsp");
 		dispatcher.forward(request, response);
 	}
+	
+	public String nombreEmpresa(int idempresa) {
+		String mostrar=" ";
+		EmpresaDao e=new EmpresaDao();
+		List<Empresa> listaempresas = e.listar();
+		for(int i=0;i<listaempresas.size();i++) {
+			if(listaempresas.get(i).getId()==idempresa) {
+				mostrar=listaempresas.get(i).getDenominacion();
+			}
+		}
+		return mostrar;
+	}
 }

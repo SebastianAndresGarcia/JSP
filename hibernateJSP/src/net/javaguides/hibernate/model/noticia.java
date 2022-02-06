@@ -34,6 +34,8 @@ public class noticia implements Serializable {
 	private String contenidohtml;
 	private String publicada;
 	private String fechapublicacion;
+	
+	
 	//private int idempresa;
 	
 	//@Access(AccessType.PROPERTY)
@@ -90,13 +92,7 @@ public class noticia implements Serializable {
 		this.empresa = empresa;
 	}
 
-	/*public int getIdempresa() {
-		return idempresa;
-	}
-
-	public void setIdempresa(int idempresa) {
-		this.idempresa = idempresa;
-	}
-	*/
+	
+	
 	
 }

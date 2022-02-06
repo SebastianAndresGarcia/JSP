@@ -65,7 +65,7 @@ public class EmpresaDao {
 			e1 = (Empresa) consulta.getSingleResult();
 
 			System.out.println(
-					"Estoy en empreDao, empresa ID: " + e1.getId() + ", Denominacion; " + e1.getDenominacion());
+					"Estoy en empreDao fc addNoticiaToEmpresa, empresa ID: " + e1.getId() + ", Denominacion; " + e1.getDenominacion());
 			noticia.setEmpresa(e1);
 			List<noticia> noticias = e1.getNoticias();
 			noticias.add(noticia);

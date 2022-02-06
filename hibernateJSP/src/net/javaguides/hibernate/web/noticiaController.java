@@ -23,7 +23,7 @@ public class noticiaController extends HttpServlet {
 	private noticiaDao noticiaDao;
 	private EmpresaDao empresaDao;
 	int idempresa;
-
+	int idnoticia;
 	public void init() {
 		empresaDao = new EmpresaDao();
 		noticiaDao = new noticiaDao();
@@ -46,27 +46,22 @@ public class noticiaController extends HttpServlet {
 	private void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		/*
-		 * String titulonoticia = "titulonoticia"; String resumennoticia =
-		 * "resumennoticia";
-		 * 
-		 * noticia noticia = new noticia(); noticia.setTitulonoticia(titulonoticia);
-		 * noticia.setResumennoticia(resumennoticia);
-		 * 
-		 * noticiaDao.saveNoticia(noticia);
-		 */
-		// request.getParameter("lista");
-		/*
-		 * List<Empresa> listaempresas = empresaDao.listar();
-		 * request.setAttribute("lista", listaempresas); RequestDispatcher dispatcher =
-		 * request.getRequestDispatcher("register.jsp"); dispatcher.forward(request,
-		 * response);
-		 */
 		String accion = request.getParameter("accion");
 		String titulonoticia = request.getParameter("titulonoticia");
 		String resumennoticia = request.getParameter("resumennoticia");
 		String contenidohtml = request.getParameter("editorHtml");
-		idempresa = Integer.parseInt(request.getParameter("empresaId"));
+		
+		if (request.getParameter("empresaId") != null) {
+			idempresa = Integer.parseInt(request.getParameter("empresaId"));
+		} else {
+			idempresa = Integer.parseInt(request.getParameter("empresaIdRequest"));
+		}
+		
+		if (request.getParameter("empresaId") != null&&request.getParameter("noticiaId") != ""&&request.getParameter("noticiaId") != null) {
+			idnoticia = Integer.parseInt(request.getParameter("noticiaId"));
+		} else if (request.getParameter("noticiaIdRequest") != ""&&request.getParameter("noticiaIdRequest") != null){
+			idnoticia = Integer.parseInt(request.getParameter("noticiaIdRequest"));
+		}
 		System.out.println("Estoy en notiControl, valor id empresa elegida: " + idempresa);
 		noticia noticia = new noticia();
 		noticia.setTitulonoticia(titulonoticia);
@@ -79,7 +74,7 @@ public class noticiaController extends HttpServlet {
 				empresaDao.addNoticiaToEmpresa(noticia, idempresa);
 				break;
 			case "B": // baja
-				noticia.setId(Integer.parseInt(request.getParameter("noticiaId")));
+				noticia.setId(idnoticia);
 				try {
 					noticiaDao.DeleteNoticia(noticia);
 				} catch (Exception e) {
@@ -88,15 +83,23 @@ public class noticiaController extends HttpServlet {
 				}
 				break;
 			case "M": // modificacion
-				noticia.setId(Integer.parseInt(request.getParameter("noticiaId")));
+				noticia.setId(idnoticia);
+				//Empresa e=new Empresa();
+				//e.setId(idempresa);
+				
+				System.out.println("idnoticia en el switch M: "+idnoticia);
+				//empresaDao.addNoticiaToEmpresa(noticia, idempresa);
 				noticiaDao.saveNoticia(noticia);
 				break;
 			default:
 				break;
 			}
+			accion = null;
 		}
 
 		request.setAttribute("idEmp", new Integer(idempresa));
+		request.setAttribute("idNoti", new Integer(idnoticia));
+
 		// noticia=new noticia(); //esta linea no funciona, la idea era borrar el objeto
 		// para que no vuelva a insertarlo, probé haciendo nula a idempresa pero tampoco
 		// funciona, al presionar f5 en la pág. ppal me reinserta una noticia y no
@@ -122,5 +125,17 @@ public class noticiaController extends HttpServlet {
 		System.out.println("en el controller, valor idempresa: " + idempresa);
 		return noti.listarNoticiasDao(idempresa);
 		// return null;
+	}
+
+	public noticia noticiaporID(int idnoticia, int idempresa) {
+		noticia noticia = new noticia();
+		noticiaDao noti = new noticiaDao();
+		List<noticia> listanoticias = noti.listarNoticiasDao(idempresa);
+		for (int i = 0; i < listanoticias.size(); i++) {
+			if (idnoticia == listanoticias.get(i).getId()) {
+				noticia = listanoticias.get(i);
+			}
+		}
+		return noticia;
 	}
 }
